@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--
+-->
+    <link rel="stylesheet" href="../../../libraries/bootstrap-3.3.7/bootstrap.min.css">
+    <title>Tensorflow.js Digit Classifier</title>
+</head>
+
+<body onresize="doChangeCanvasWidth()">
+
+    <h2 class="text-center">Tensorflow.js Digit Classifier</h2>
+
+    <div class="container container-fluid">
+        <div id="messages"></div>
+    </div>
+
+    <div id="hideWhileLoading" style="display:none">
+        <div class="container container-fluid">
+
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        2-Layer Neural Network Controls - Gets # inputs & # outputs from imported data. User Selects # Hidden Nodes
+                    </div>
+                    <div class="panel-body">
+                        <label for="activationHidden">Activation Hidden:</label>
+                        <select id="activationHidden" name="activationHidden">
+                            <option value="sigmoid">Sigmoid</option>
+                            <option value="elu">Elu</option>
+                            <option value="hardSigmoid">HardSigmoid</option>
+                            <option value="linear">Linear</option>
+                            <option value="relu">Relu</option>
+                            <option value="relu6">Relu6</option>
+                            <option value="selu">Selu</option>
+                            <option value="softmax">Softmax</option>
+                            <option value="softplus">Softplus</option>
+                            <option value="softsign">Softsign</option>
+                            <option value="tanh">Tanh</option>
+                        </select>
+                        <label for="activationOutputs">Activation Outputs:</label>
+                        <select id="activationOutputs" name="activationOutputs">
+                            <option value="sigmoid">Sigmoid</option>
+                            <option value="elu">Elu</option>
+                            <option value="hardSigmoid">HardSigmoid</option>
+                            <option value="linear">Linear</option>
+                            <option value="relu">Relu</option>
+                            <option value="relu6">Relu6</option>
+                            <option value="selu">Selu</option>
+                            <option value="softmax" selected>Softmax</option>
+                            <option value="softplus">Softplus</option>
+                            <option value="softsign">Softsign</option>
+                            <option value="tanh">Tanh</option>
+                        </select>
+                        <label for="optimizer">Optimizer:</label>
+                        <select id="optimizer" name="optimizer">
+                            <option value="SGD">SGD</option>
+                            <option value="Momentum">Momentum</option>
+                            <option value="ADAGRAD" selected>ADAGRAD</option>
+                            <option value="ADADELTA">ADADELTA</option>
+                            <option value="ADAM">ADAM</option>
+                            <option value="ADAMAX">ADAMAX</option>
+                            <option value="RMSPROP">RMSPROP</option>
+                        </select>
+                        <label for="loss">Loss:</label>
+                        <select id="loss" name="loss">
+                            <option value="absoluteDifference">AbsoluteDifference</option>
+                            <option value="computeWeightedLoss">ComputeWeightedLoss</option>
+                            <option value="cosineDistance">CosineDistance</option>
+                            <option value="hingeLoss">HingeLoss</option>
+                            <option value="huberLoss">HuberLoss</option>
+                            <option value="logLoss">LogLoss</option>
+                            <option value="meanSquaredError">MeanSquaredError</option>
+                            <option value="sigmoidCrossEntropy">SigmoidCrossEntropy</option>
+                            <option value="softmaxCrossEntropy">SoftmaxCrossEntropy</option>
+                            <option value="categoricalCrossentropy" selected>CategoricalCrossentropy</option>
+                        </select>
+                        <label for="nnNumHidden">Hidden Nodes:</label>
+                        <input id="nnNumHidden" name="nnNumHidden" type="text" placeholder="no of hidden" value="16" />
+                        <label for="nnNumEpoch">Epochs:</label>
+                        <input id="nnNumEpoch" name="nnNumEpoch" type="text" placeholder="no of Epoch" value="6000" />
+                        <label for="nnLossGoal">Loss Goal:</label>
+                        <input id="nnLossGoal" name="nnLossGoal" type="text" placeholder="Loss Goal" value="0.35" />
+                        Curr Loss: <font size="+1"><span id="currLoss">0.00</span></font>
+                        <div class="clearFix">
+                            Learning Rate: <span id="learningRate"></span>
+                            <input id="learningRateSlider" type="range" min="0.001" max="2.0" step="0.001" value="0.2"
+                                onchange="doChangeLearningRate(this)">
+                        </div>
+                        <button id="createNetwork" class="btn btn-primary" onclick="doCreateNetwork()">Create Network</button>
+                        <button id="trainNetwork" class="btn btn-primary" onclick="doTrainNetwork(this)" disabled >Train Network</button>
+                        <button id="testNetwork" class="btn btn-primary" onclick="doTestNetwork(this)" disabled >Test Network</button>
+                        Test Results: <span id="testResults"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Canvas
+                        <label for="canvasHeight">Height:</label>
+                        <input id="canvasHeight" name="canvasHeight" type="text" maxlength="3" size="3" placeholder="height" value="400" onchange="doChangeCanvasHeight(this)" />
+                        <label for="canvasResolution">Resolution:</label>
+                        <input id="canvasResolution" name="canvasResolution" maxlength="3" size="3" type="text" placeholder="height" value="30" onkeyup="doChangeCanvasResolution(this)" />
+                        &nbsp;Frame Rate: <span id="frameRate">0.00</span>&nbsp;&nbsp; Tensors: <font size="+1"><span id="tensors">0</span></font>&nbsp;
+
+                        <div id="imageSelectionSubmissionButtonGroup" class="btn-group" role="group"
+                            aria-label="Colors">
+                            <button id="0" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">0</button>
+                            <button id="1" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">1</button>
+                            <button id="2" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">2</button>
+                            <button id="3" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">3</button>
+                            <button id="4" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">4</button>
+                            <button id="5" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">5</button>
+                            <button id="6" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">6</button>
+                            <button id="7" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">7</button>
+                            <button id="8" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">8</button>
+                            <button id="9" type="button" class="btn btn-secondary"
+                                onclick="doSubmitSelectedDigit(this)">9</button>
+                        </div>
+                        <div class="clearFix"></div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <button id="guess" type="button" class="btn btn-primary" onclick="doStartGuessingImage(this)" disabled >Start Guessing</button>
+                        </div>
+                        <div class="row">
+
+                            <div id="canvasPanel" class="col col-xs-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                    </div>
+                                    <div class="panel-body">
+                                        <div id="canvasParent"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="guessingStatsPanel" style="display:none">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                    </div>
+
+                                    <div class="panel-body">
+                                        <div id="guessingStats" class="text-center">
+                                        <div class="row">
+                                            <div id="guessingInnerStats"></div>
+                                        </div>
+                                        <div class="row">
+                                           <div class="col col-xs-4"> 
+                                            </div>
+                                           <div class="col col-xs-2"> 
+                                            <button id="yes" type="button" class="btn btn-primary" onclick="doYes(this)" style="display:none" >Yes</button>
+                                            </div>
+                                           <div class="col col-xs-2"> 
+                                            <button id="no" type="button" class="btn btn-primary" onclick="doNo(this)"  style="display:none">No</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../../../../p5/p5.min.js"></script>
+<script src="../../../libraries/tfjs-1.1.2/dist/tf.min.js"></script>
+<script src="messages.js"></script>
+<script src="importing.converting.handling.data.funcs.js"></script>
+<script src="image.selection.submit.buttons.js"></script>
+<script src="neural.network.funcs.js"></script>
+<script src="canvas.drawing.funcs.js"></script>
+<script src="index.html.event.handlers.js"></script>
+<!--
+-->
+<script src="mouse.event.handlers.js"></script>
+<script src="image.guessing.funcs.js"></script>
+<script src="sketch.js"></script>
+
+</html>

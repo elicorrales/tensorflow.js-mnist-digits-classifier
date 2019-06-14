@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+-->
+    <link rel="stylesheet" href="js.vendor/bootstrap.min.css">
+    <title>MNIST Digits Test</title>
+</head>
+
+<body>
+
+    <h1>MNIST Digits Test ++</H1>
+
+    <div id="hideWhileLoading" style="display:none">
+
+        <div id="messages"></div>
+        <div id="messages2"></div>
+
+
+        <div class="container container-fluid">
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Neural Network Controls
+                    </div>
+                    <div class="panel-body">
+                        <label for="nnNumInputs">Inputs:</label>
+                        <input id="nnNumInputs" type="text" placeholder="no of inputs" value="784" />
+                        <label for="nnNumHidden">Hidden:</label>
+                        <input id="nnNumHidden" type="text" placeholder="no of hidden" value="784" />
+                        <label for="nnNumOutputs">Outputs:</label>
+
+                        <!-- for method one per digit, we need 10 outputs-->
+                        <input id="nnNumOutputs" type="text" placeholder="no of outputs" value="10" />
+                        <!--
+                        -->
+
+                        <!-- for method binary sequence, we need 4 outputs-->
+                        <!--
+                        <input id="nnNumOutputs" type="text" placeholder="no of outputs" value="4" />
+                        -->
+
+                        <div>
+                            <button class="btn btn-info" onclick="doCreateNetwork()">Create Network</button>
+                            <button id="train" class="btn btn-info" onclick="doTrainNetwork()">Train Network</button>
+                            <button class="btn btn-warning" onclick="doToggleUseTrainingOrTestingData(this)">Using
+                                Training Data To Test</button>
+                            <button class="btn btn-info" onclick="doTestNetwork()">Test Network</button>
+                            <button class="btn btn-info" onclick="doDoodle()">Doodle</button>
+                            <button class="btn btn-info" onclick="doPlaceImage()">Put Back</button>
+                            <button class="btn btn-info" onclick="doGuess()">Guess</button>
+                        </div>
+                        Learning Rate: <span id="learningRate"></span>
+                        <input id="learningRateSlider" type="range" min="0.01" max="1.0" step="0.01" value="0.01"
+                            onchange="doChangeLearningRate(this)">
+
+                        <div>
+                            <label class="checkbox-inline"><input id="autoRelearn" type="checkbox" checked
+                                    onclick="doAutoRelearn()">Auto Re-learn</label>
+                        </div>
+                        Min Required Test % Correct: <span id="minRequiredTestPercentCorrect"></span>
+                        <input id="minRequiredTestPercentCorrectSlider" type="range" min="0" max="100" step="1"
+                            value="100" onchange="doChangeMinRequiredTestPercentCorrect(this)">
+
+                    </div>
+                    <div class="panel-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container container-fluid">
+            <div class="row">
+                <div class="panel panel-default">
+                    <div id="hideWhileTraining1" class="panel-heading">
+                        Canvas
+                        <div>
+                            <label for="doodleName">Doodle Name:
+                                <input id="doodleName" name="doodleName" type="text" placeholder="doodle name" />
+                            </label>
+                            <button class="btn btn-default" onclick="doSaveDoodleToDisk()">Save Doodle</button>
+                            <button class="btn btn-default" onclick="doLoadDoodleFromDisk()">Load Doodle</button>
+                        </div>
+                    </div>
+                    <!--<div class="row">-->
+                        <div id="hideWhileTraining2" class="panel-body" style="background:aliceblue">
+                            <div class="col-xs-6">
+                                <div id="canvasParent"></div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div id="JUMBOTRON" style="display:none" class="jumbotron jumbotron-fluid">
+                                    <center>
+                                        <h1 class="display-4" id="GUESS"></h1>
+                                    </center>
+                                </div>
+                            </div>
+                        </div>
+                    <!--</div>-->
+                    <div class="panel-footer">
+                        Show The Input Data:
+                        <button class="btn btn-default" onclick="doToggleTrainingVsTestingImages(this)">Toggle Test Or
+                            Training</button>
+                        <button class="btn btn-default" onclick="doInvert()">Invert</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+<script src="js.vendor/p5.min.js"></script>
+<script src="js.vendor/p5.dom.min.js"></script>
+<script src="js.vendor/nn.js"></script>
+<script src="js.vendor/matrix.js"></script>
+<script src="utilities.js"></script>
+<script src="messages.js"></script>
+<script src="training.or.test.shapes.data.funcs.js"></script>
+<script src="current.training.data.funcs.js"></script>
+<script src="training.funcs.js"></script>
+<script src="testing.funcs.js"></script>
+<script src="neural.network.funcs.js"></script>
+<script src="mouse.events.js"></script>
+<script src="guessing.funcs.js"></script>
+<script src="sketch.js"></script>
+
+</html>
